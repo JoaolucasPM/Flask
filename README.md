@@ -1,16 +1,40 @@
-# Estrutura básica de uma Api flask
+# Criando um aplicação flask
 
-### Padrão M.V.C
+[Documentação](https://flask.palletsprojects.com/en/stable/)
 
-M = Model - Model tudo aquilo que é relacionado ao banco de dados
-<br>
-V = View  - Tudo aquilo que retornando para o usuario final.
-<br>
-C = Controller - Controle do projeto, onde é aplicado a lógica
 
-```plaintext
-Src/
-    ├── controllers/
-    ├── models/
-    ├── views/
-    ├── venv/
+<h3>Orientação para que se use o ambiente virtual </h3>
+
+# Criando o ambiente
+
+```
+python -m venv .venv
+```
+
+### Ativando o ambiente
+```
+.\venv\Scripts\Activate 
+```
+# Criando uma Aplicação Flask
+### Instalando o flask
+
+```
+pip install flask
+```
+-  Criar um arquivo "app.py" e inserir o cód
+
+```
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def hello_world():
+    return "<p>Hello, World!</p>"
+``` 
+- No terminar excecute 
+
+```
+flask --app run
+```
+
