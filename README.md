@@ -4,40 +4,28 @@ Banco usado - SQLite3 [Documentação](https://sqlite.org/)
 
 [Documentação Flask](https://flask.palletsprojects.com/en/stable/)
 
-## Dentro do "app.py"
- ```
- import os
+## Configuração do Projeto Flask
 
-from flask import Flask
+Este projeto utiliza o framework Flask para criar uma aplicação web básica. A estrutura e configuração da aplicação são definidas no arquivo principal. Abaixo, um resumo do funcionamento do código:
 
+### Estrutura Básica
 
-def create_app(test_config=None):
-    # create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
-    app.config.from_mapping(
-        SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'diobank.sqlite'),
-    )
+1. **Importação de Módulos**:
+   - `os`: Para manipulação de caminhos e criação de pastas.
+   - `Flask`: Para inicializar a aplicação web.
 
-    if test_config is None:
-        # load the instance config, if it exists, when not testing
-        app.config.from_pyfile('config.py', silent=True)
-    else:
-        # load the test config if passed in
-        app.config.from_mapping(test_config)
+2. **Função `create_app`**:
+   - Responsável por configurar e retornar a aplicação Flask.
+   - Suporta configuração padrão e opcional para testes.
 
-    # ensure the instance folder exists
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
+3. **Configurações Padrão**:
+   - `SECRET_KEY`: Define uma chave de segurança padrão como 'dev'.
+   - `DATABASE`: Localização do banco de dados SQLite (`instance/diobank.sqlite`).
 
+4. **Carregamento de Configurações**:
+   - Configurações adicionais podem ser carregadas de um arquivo `config.py` (se disponível).
+   - Testes podem utilizar configurações específicas, passadas como parâmetro.
 
-    return app
-```
+5. **Criação do Diretório de Instância**:
+   - Garante que o diretório `instance/` existe, necessário para armazenar o banco de dados e outras configurações.
 
-Executar: 
-
-```
-flask --app app run --debug   
-```
