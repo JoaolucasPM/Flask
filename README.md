@@ -1,4 +1,4 @@
-# Conectando o flask ao mercado
+# Conectando o flask ao banco de dados
 
 Banco usado - SQLite3 [Documentação](https://sqlite.org/)
 
