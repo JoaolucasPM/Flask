@@ -1,31 +1,43 @@
-# Conectando o flask ao mercado
+# Definindo acesso ao banco
+
+### Conforme a documentação do flask
 
 Banco usado - SQLite3 [Documentação](https://sqlite.org/)
 
 [Documentação Flask](https://flask.palletsprojects.com/en/stable/)
 
-## Configuração do Projeto Flask
+### Funções Principais
 
-Este projeto utiliza o framework Flask para criar uma aplicação web básica. A estrutura e configuração da aplicação são definidas no arquivo principal. Abaixo, um resumo do funcionamento do código:
+1. **`get_db`**:
+   - Estabelece uma conexão com o banco de dados SQLite definido em `current_app.config['DATABASE']`.
+   - Usa `sqlite3.Row` como fábrica de linhas, permitindo acessar os dados do banco como dicionários.
+   - A conexão é armazenada no objeto global `g` para ser reutilizada durante o ciclo de requisição.
 
-### Estrutura Básica
+2. **`close_db`**:
+   - Fecha a conexão com o banco de dados ao final de cada requisição.
+   - Usa `g.pop('db')` para remover a conexão armazenada, caso exista.
 
-1. **Importação de Módulos**:
-   - `os`: Para manipulação de caminhos e criação de pastas.
-   - `Flask`: Para inicializar a aplicação web.
+3. **`init_db`**:
+   - Inicializa o banco de dados executando os comandos definidos no arquivo `schema.sql`.
+   - Usa o método `open_resource` de Flask para acessar o arquivo dentro do diretório da aplicação.
 
-2. **Função `create_app`**:
-   - Responsável por configurar e retornar a aplicação Flask.
-   - Suporta configuração padrão e opcional para testes.
+4. **`init_db_command`**:
+   - Comando CLI para inicializar o banco de dados.
+   - Apaga os dados existentes e recria as tabelas com base no schema definido.
+   - Exemplo de uso:
+     ```bash
+     flask init-db
+     ```
 
-3. **Configurações Padrão**:
-   - `SECRET_KEY`: Define uma chave de segurança padrão como 'dev'.
-   - `DATABASE`: Localização do banco de dados SQLite (`instance/diobank.sqlite`).
+5. **`init_app`**:
+   - Configura a aplicação Flask para:
+     - Fechar a conexão com o banco automaticamente após o ciclo de requisição.
+     - Registrar o comando CLI `init-db`.
 
-4. **Carregamento de Configurações**:
-   - Configurações adicionais podem ser carregadas de um arquivo `config.py` (se disponível).
-   - Testes podem utilizar configurações específicas, passadas como parâmetro.
+### Modificação Necessária na Aplicação
 
-5. **Criação do Diretório de Instância**:
-   - Garante que o diretório `instance/` existe, necessário para armazenar o banco de dados e outras configurações.
+Para que o banco de dados seja integrado corretamente à aplicação, é necessário importar e inicializar o módulo de banco de dados no arquivo principal:
 
+```python
+from . import db
+db.init_app(app)
