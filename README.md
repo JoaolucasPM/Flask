@@ -1,10 +1,18 @@
-# Definindo acesso ao banco
+# Definindo acesso ao banco - ORM
 
-### Conforme a documentação do flask
+### Usando [SQLAlchemy](https://flask-sqlalchemy.readthedocs.io/en/stable/)
 
-Banco usado - SQLite3 [Documentação](https://sqlite.org/)
+
 
 [Documentação Flask](https://flask.palletsprojects.com/en/stable/)
+
+Instalando o SQLAlchemy
+```
+pip install -U Flask-SQLAlchemy
+```
+## Acesso ao Banco de Dados com SQLite
+
+Este projeto utiliza o SQLite como banco de dados para armazenar informações. Abaixo, estão os detalhes sobre como o código gerencia a conexão, inicialização e finalização do banco de dados.
 
 ### Funções Principais
 
