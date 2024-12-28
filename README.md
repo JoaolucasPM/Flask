@@ -1,51 +1,85 @@
-# Definindo acesso ao banco - ORM
+# API de Usuários com Flask
 
-### Usando [SQLAlchemy](https://flask-sqlalchemy.readthedocs.io/en/stable/)
+Este repositório contém uma API simples construída com Flask para gerenciar usuários. Ela permite criar novos usuários e listar todos os usuários existentes.
 
+## Funcionalidades
 
+- **Criar Usuário (POST)**: Adiciona um novo usuário ao banco de dados.
+- **Listar Usuários (GET)**: Retorna todos os usuários cadastrados.
 
-[Documentação Flask](https://flask.palletsprojects.com/en/stable/)
+## Tutorial: Como Criar Cada Função
 
-Instalando o SQLAlchemy
-```
-pip install -U Flask-SQLAlchemy
-```
-## Acesso ao Banco de Dados com SQLite
+### 1. **Criando o Blueprint**
 
-Este projeto utiliza o SQLite como banco de dados para armazenar informações. Abaixo, estão os detalhes sobre como o código gerencia a conexão, inicialização e finalização do banco de dados.
-
-### Funções Principais
-
-1. **`get_db`**:
-   - Estabelece uma conexão com o banco de dados SQLite definido em `current_app.config['DATABASE']`.
-   - Usa `sqlite3.Row` como fábrica de linhas, permitindo acessar os dados do banco como dicionários.
-   - A conexão é armazenada no objeto global `g` para ser reutilizada durante o ciclo de requisição.
-
-2. **`close_db`**:
-   - Fecha a conexão com o banco de dados ao final de cada requisição.
-   - Usa `g.pop('db')` para remover a conexão armazenada, caso exista.
-
-3. **`init_db`**:
-   - Inicializa o banco de dados executando os comandos definidos no arquivo `schema.sql`.
-   - Usa o método `open_resource` de Flask para acessar o arquivo dentro do diretório da aplicação.
-
-4. **`init_db_command`**:
-   - Comando CLI para inicializar o banco de dados.
-   - Apaga os dados existentes e recria as tabelas com base no schema definido.
-   - Exemplo de uso:
-     ```bash
-     flask init-db
-     ```
-
-5. **`init_app`**:
-   - Configura a aplicação Flask para:
-     - Fechar a conexão com o banco automaticamente após o ciclo de requisição.
-     - Registrar o comando CLI `init-db`.
-
-### Modificação Necessária na Aplicação
-
-Para que o banco de dados seja integrado corretamente à aplicação, é necessário importar e inicializar o módulo de banco de dados no arquivo principal:
+O **Blueprint** organiza a aplicação. Crie o Blueprint com o nome `user` e o prefixo de URL `/users`:
 
 ```python
-from . import db
-db.init_app(app)
+from flask import Blueprint
+app = Blueprint('user', __name__, url_prefix='/users')
+```
+
+### 2. **Função `_create_user()`**
+
+Esta função cria um novo usuário:
+
+```python
+def _create_user():
+    data = request.json
+    user = User(username=data["username"])
+    db.session.add(user)
+    db.session.commit()
+```
+
+### 3. **Função `_list_users()`**
+
+Esta função lista todos os usuários:
+
+```python
+def _list_users():
+    query = db.select(User)
+    users = db.session.execute(query).scalars()
+    
+    return [{'id': user.id, 'username': user.username} for user in users]
+```
+
+### 4. **Função `handle_user()`**
+
+Gerencia as requisições `GET` e `POST`:
+
+```python
+@app.route('/', methods=['GET', 'POST'])
+def handle_user():
+    if request.method == 'POST':
+        _create_user()
+        return {'Post message': []}, HTTPStatus.CREATED
+    else:
+        return {'users': _list_users()}
+```
+
+### 5. **Configurando a Aplicação**
+
+Registre o Blueprint na aplicação Flask principal:
+
+```python
+app = Flask(__name__)
+app.register_blueprint(user_blueprint)
+```
+
+## Endpoints
+
+### `POST /users/`
+
+Cria um novo usuário com o nome fornecido no corpo da requisição.
+
+### `GET /users/`
+
+Lista todos os usuários cadastrados.
+
+
+
+## Tecnologias Utilizadas
+
+- Flask
+- SQLAlchemy
+- HTTPStatus
+
